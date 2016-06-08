@@ -1,8 +1,9 @@
 {
-  "name": "ionic-multiselect",
-  "version": "0.1.1",
+  "name": "ps-ionic-multiselect",
+  "version": "0.1.2",
   "authors": [
-    "Martin Peveri <martinpeveri@gmail.com>"
+    "Martin Peveri <martinpeveri@gmail.com>",
+    "Marcel Raddatz <raddatz@gates-services.de>"
   ],
   "description": "Multiselect for Inonic Framework.",
   "main": "ionic-multiselect.js",
@@ -15,7 +16,7 @@
     "Multiselect"
   ],
   "license": "MIT",
-  "homepage": "https://github.com/mapeveri/ionic-multiselect",
+  "homepage": "https://github.com/wollkater/ionic-multiselect",
   "ignore": [
     "**/.*",
     "node_modules",
