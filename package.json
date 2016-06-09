@@ -1,6 +1,6 @@
 {
-  "name": "ionic-multiselect",
-  "version": "0.1.1",
+  "name": "ps-ionic-multiselect",
+  "version": "0.1.2",
   "description": "Multiselect for Inonic Framework.",
   "main": "ionic-multiselect.js",
   "directories": {
@@ -11,17 +11,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/mapeveri/ionic-multiselect"
+    "url": "https://github.com/wollkater/ionic-multiselect"
   },
   "keywords": [
     "AngularJs"
   ],
-  "author": "Martín Peveri",
+  "author": "Martín Peveri and Marcel Raddatz",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/mapeveri/ionic-multiselect/issues"
+    "url": "https://github.com/wollkater/ionic-multiselect/issues"
   },
-  "homepage": "https://github.com/mapeveri/ionic-multiselect",
+  "homepage": "https://github.com/wollkater/ionic-multiselect",
   "devDependencies": {
     "gulp": "^3.9.0",
     "gulp-concat": "^2.6.0",
