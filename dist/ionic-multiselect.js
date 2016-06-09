@@ -1,23 +1,23 @@
 (function () {
-"use strict";
+  "use strict";
 
-angular.module("ionic-multiselect", [])
+  angular.module("ionic-multiselect", [])
   .filter('translateItem', ["$injector", "$parse", function($injector, $parse) {
     /**
-    * @name translateItem
-    * @desc Translate value item modal in base to value_property
-    * @param {Object} item: Object data item
-    * @returns {String}
-    */
+     * @name translateItem
+     * @desc Translate value item modal in base to value_property
+     * @param {Object} item: Object data item
+     * @returns {String}
+     */
     return function(item, scope) {
 
       var filterTranslate;
       try{
-          var filterTranslate = $injector.get('$filter');
-          //Parse item property of the object
-          var parseFun = $parse('item.' + scope.valueProperty);
-          var valueTranslate = parseFun(scope);
-          return filterTranslate('translate')(scope.indexTranslate + valueTranslate);
+        var filterTranslate = $injector.get('$filter');
+        //Parse item property of the object
+        var parseFun = $parse('item.' + scope.valueProperty);
+        var valueTranslate = parseFun(scope);
+        return filterTranslate('translate')(scope.indexTranslate + valueTranslate);
       }catch(e){
         return "";
       }
@@ -25,16 +25,16 @@ angular.module("ionic-multiselect", [])
   }])
   .filter('showTextData', ["$injector", function($injector) {
     /**
-    * @name showTextData
-    * @desc Filter that show data text
-    * @param {String} value: Value text show
-    * @returns {Array}
-    */
+     * @name showTextData
+     * @desc Filter that show data text
+     * @param {String} value: Value text show
+     * @returns {Array}
+     */
     return function(value, scope) {
 
       var filterTranslate;
       try{
-          var filterTranslate = $injector.get('$filter');
+        var filterTranslate = $injector.get('$filter');
       }catch(e){}
 
       var arr = [];
@@ -44,12 +44,12 @@ angular.module("ionic-multiselect", [])
         var tot = arr.length;
 
         for(var i=0;i<tot;i++){
-            if(scope.isTranslate){
-              var valueAux = filterTranslate('translate')(scope.indexTranslate + arr[i].trim());
-            }else{
-              var valueAux = arr[i].trim();
-            }
-            arr[i] = valueAux;
+          if(scope.isTranslate){
+            var valueAux = filterTranslate('translate')(scope.indexTranslate + arr[i].trim());
+          }else{
+            var valueAux = arr[i].trim();
+          }
+          arr[i] = valueAux;
         }
       }else{
         if(scope.isTranslate){
@@ -67,23 +67,25 @@ angular.module("ionic-multiselect", [])
     };
   }])
   /**
-  * @desc Multiselect for Ionic Framework
-  * @example
-  *   <multiselect
-  *      header-text="Header"
-  *      items="data"
-  *      text-property="value"
-  *      value-property="id"
-  *      is-translate="true"
-  *      index-translate="TAG_TRANSLATE"
-  *      text="Text default multiselect"
-  *      modal-template-url="bower_components/ionic-multiselect/templates/modal-template.html"
-  *      template-url="bower_components/ionic-multiselect/templates/item-template.html"
-  *      note-text="Note Text"
-  *      value-changed="onValueChanged(value)">
-  *   </multiselect>
-  */
-  .directive("multiselect", ["$ionicModal", function($ionicModal) {
+   * @desc Multiselect for Ionic Framework
+   * @example
+   *   <multiselect
+   *      header-text="Header"
+   *      items="data"
+   *      text-property="value"
+   *      value-property="id"
+   *      is-translate="true"
+   *      index-translate="TAG_TRANSLATE"
+   *      text="Text default multiselect"
+   *      modal-template-url="bower_components/ionic-multiselect/templates/modal-template.html"
+   *      template-url="bower_components/ionic-multiselect/templates/item-template.html"
+   *      note-text="Note Text"
+   *      query-id="someId"
+   *      value-changed="onValueChanged(value)"
+   *      modal-closed="onTagModalClosed(value)">
+   *   </multiselect>
+   */
+  .directive("multiselect", ["$ionicModal", "$log", "$filter", "$location", function($ionicModal, $log, $filter, $location) {
     return {
       restrict: "E",
       //Template with item for show modal
@@ -98,11 +100,12 @@ angular.module("ionic-multiselect", [])
       scope: {
         items: "=", // Needs to have a values
         valueChangedCallback: "&valueChanged", // The callback used to signal that the value has changed
+        modalClosedCallback: "&modalClosed", //The call back used to signal that the modal was closed
         getCustomTextCallback: "&getCustomText" // The callback used to get custom text based on the selected value
       },
       //Conected directive
       link: function(scope, element, attrs) {
-        // Header usado en ion-header-bar
+        // Header used in ion-header-bar
         scope.headerText = attrs.headerText || '';
         // Text displayed on label
         scope.text = attrs.text || '';
@@ -117,26 +120,28 @@ angular.module("ionic-multiselect", [])
         // The modal properties
         scope.modalTemplateUrl = attrs.modalTemplateUrl;
         scope.modalAnimation = attrs.modalAnimation;
+        //Name of the search parameter
+        scope.queryId = attrs.queryId || "search";
         // Note properties
         scope.noteText = attrs.noteText || "";
 
         //Init modal with the items
         if (scope.modalTemplateUrl) {
           $ionicModal.fromTemplateUrl(
-            scope.modalTemplateUrl,
-            {
-              scope: scope,
-              animation: scope.modalAnimation
-            }
+              scope.modalTemplateUrl,
+              {
+                scope: scope,
+                animation: scope.modalAnimation
+              }
           ).then(function(modal) {
             scope.modal = modal;
           });
         } else {
           scope.modal = $ionicModal.fromTemplate('',
-            {
-              scope: scope,
-              animation: scope.modalAnimation
-            }
+              {
+                scope: scope,
+                animation: scope.modalAnimation
+              }
           );
         }
 
@@ -146,31 +151,31 @@ angular.module("ionic-multiselect", [])
         });
 
         /**
-        * @name getItemText
-        * @desc Get text property of objeto
-        * @param {Object} item: Object data item
-        * @returns {String}
-        */
+         * @name getItemText
+         * @desc Get text property of objeto
+         * @param {Object} item: Object data item
+         * @returns {String}
+         */
         scope.getItemText = function(item) {
           return scope.textProperty ? item[scope.textProperty] : item;
         };
 
         /**
-        * @name getItemValue
-        * @desc Get value property of objet
-        * @param {Object} item: Object data item
-        * @returns {String}
-        */
+         * @name getItemValue
+         * @desc Get value property of objet
+         * @param {Object} item: Object data item
+         * @returns {String}
+         */
         scope.getItemValue = function(item) {
           return scope.valueProperty ? item[scope.valueProperty] : item;
         };
 
         /**
-        * @name getText
-        * @desc Get items selected
-        * @param {Array} value: Array with values showed in modal
-        * @returns {String}
-        */
+         * @name getText
+         * @desc Get items selected
+         * @param {Array} value: Array with values showed in modal
+         * @returns {String}
+         */
         scope.getText = function(value) {
           // Push the values into a temporary array so that they can be iterated through
           var temp = value ? value : [];
@@ -213,20 +218,20 @@ angular.module("ionic-multiselect", [])
         };
 
         /**
-        * @name hideItems
-        * @desc Hide modal
-        * @param {Object} event: Event js
-        */
+         * @name hideItems
+         * @desc Hide modal
+         * @param {Object} event: Event js
+         */
         scope.hideItems = function(event) {
           scope.modal.hide();
         };
 
         /**
-        * @name onCheckValueChanged
-        * @desc Raised by watch when the check value changes
-        * @param {Object} newValue: New value object
-        * @param {Object} oldValue: Old value object
-        */
+         * @name onCheckValueChanged
+         * @desc Raised by watch when the check value changes
+         * @param {Object} newValue: New value object
+         * @param {Object} oldValue: Old value object
+         */
         scope.onCheckValueChanged = function(newValue, oldValue) {
           if(typeof(newValue) !== "undefined"){
             // Notify subscribers that the value has changed
@@ -235,55 +240,77 @@ angular.module("ionic-multiselect", [])
         };
 
         /**
-        * @name onValueChanged
-        * @desc Raised by watch when the value changes
-        * @param {Object} newValue: New value object
-        * @param {Object} oldValue: Old value object
-        */
+         * @name onValueChanged
+         * @desc Raised by watch when the value changes
+         * @param {Object} newValue: New value object
+         * @param {Object} oldValue: Old value object
+         */
         scope.onValueChanged = function(newValue, oldValue) {
+          scope.allChecked = true;
+          scope.noneChecked = true;
+
+          angular.forEach(scope.items, function(item) {
+            if(item.checked) {
+              scope.noneChecked = false;
+            } else {
+              scope.allChecked = false;
+            }
+          })
+
           scope.text = scope.getText(newValue);
         };
 
         /**
-        * @name showItems
-        * @desc Show modal
-        * @param {Object} event: Event js
-        */
+         * @name showItems
+         * @desc Show modal
+         * @param {Object} event: Event js
+         */
         scope.showItems = function(event) {
           event.preventDefault(); // Prevent the event from bubbling
           scope.modal.show();
         };
 
         /**
-        * @name validate
-        * @desc Validates the current list
-        * @param {Object} item: Object data item
-        */
+         * @name validate
+         * @desc Validates the current list
+         * @param {Object} item: Object data item
+         */
         scope.validate = function(item) {
           scope.value = [];
           if (scope.items) {
             var arrChecked = [];
             angular.forEach(scope.items, function(item, key) {
               if (item[scope.checkedProperty]) {
-                scope.value[key] = scope.getItemValue(item);
+                scope.value.push(scope.getItemValue(item));
                 arrChecked.push(item);
-              }else{
-                scope.value[key] = "";
               }
             });
-
-            scope.itemChecked = arrChecked;
+            scope.filterAmount = arrChecked.length;
+            scope.modalClosedCallback({value: arrChecked});
+            scope.items = $filter('orderBy')(scope.items,['-checked','name'], false);
+            $location.search(scope.queryId,scope.value)
           }
           scope.hideItems();
         };
 
-        // Watch itemChecked property
+        /**
+         * @name tagAll
+         * @desc enables or disables all tags
+         * @param {Boolean} bool
+         */
+        scope.tagAll = function(bool) {
+          angular.forEach(scope.items, function(item) {
+            item.checked = bool;
+          })
+        };
+
+        // Watch filterAmount property
         scope.$watch(function(){
-          return scope.itemChecked;
+          return scope.filterAmount;
         }, scope.onCheckValueChanged, true);
 
         scope.$watch(function(){
-          return scope.value;
+          return scope.items;
         }, scope.onValueChanged, true);
       }
     };
